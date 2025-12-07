@@ -1,0 +1,16 @@
+{
+    "image": "48001F003202511190049.bmp",
+    "width": 1560,
+    "height": 620,
+    "annotations": [
+        {
+            "label": "anomaly",
+            "bbox": [
+                793,
+                413,
+                868,
+                501
+            ]
+        }
+    ]
+}
