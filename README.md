@@ -148,19 +148,3 @@ Adnotacje w formacie JSON zawierają informacje o lokalizacji i typie wykrytych 
   ]
 }
 ```
-
-## 🛠️ Rozwój projektu
-
-### Dodawanie nowych funkcjonalności
-
-1. Stwórz nową gałąź
-```bash
-git checkout -b feature/nazwa-funkcjonalnosci
-```
-
-2. Wprowadź zmiany i przetestuj
-3. Stwórz Pull Request
-
----
-
-**Uwaga**: Projekt był tworzony w ramach hackathonu i może wymagać dodatkowej konfiguracji dla środowiska produkcyjnego.
