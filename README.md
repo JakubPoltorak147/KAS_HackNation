@@ -1,6 +1,6 @@
 # KAS HackNation - System Detekcji Anomalii w Obrazach Rentgenowskich
 
-System webowy oparty na Django do automatycznej detekcji anomalii w obrazach rentgenowskich pojazdów, stworzony podczas hackathonu HackNation.
+System webowy oparty na Django do automatycznej detekcji anomalii w obrazach rentgenowskich pojazdów.
 
 ## 📋 Opis projektu
 
@@ -43,7 +43,7 @@ KAS_HackNation/
 ## 🔧 Technologie
 
 - **Backend**: Django
-- **Machine Learning**: PyTorch / TensorFlow (do detekcji anomalii)
+- **Machine Learning**: YOLOv8
 - **Przetwarzanie obrazów**: OpenCV, PIL/Pillow
 - **Analiza danych**: NumPy, Pandas
 - **Notebooki**: Jupyter
