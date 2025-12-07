@@ -1,8 +1,8 @@
 import os
 import shutil
 
-source_folder = r"C:\Users\jakub\Documents\KAS_HackNation\NAUKA\czyste"
-target_folder = r"C:\Users\jakub\Documents\KAS_HackNation\NAUKA\czyste_przeksztalcone"
+source_folder = r"C:\Users\macie\OneDrive - Politechnika Warszawska\Pulpit\Hackathony\hacknation\NAUKA\brudne"
+target_folder = r"C:\Users\macie\OneDrive - Politechnika Warszawska\Pulpit\Hackathony\hacknation\NAUKAbrudne_przeksztalcone"
 
 os.makedirs(target_folder, exist_ok=True)
 

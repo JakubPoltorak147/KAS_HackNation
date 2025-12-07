@@ -1,0 +1,135 @@
+{% extends 'scanner/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card p-5 text-center">
+            
+            <h2 class="mb-4">Analizuj skan pojazdu</h2>
+            <p class="text-muted mb-4">Przeciągnij zdjęcie RTG pojazdu, aby wykryć anomalie.</p>
+
+            <div id="drop-zone" class="border rounded p-5 mb-3" 
+                 style="border: 3px dashed #1a237e; background-color: #e8eaf6; cursor: pointer; transition: 0.3s;">
+                <h1 class="display-4" id="drop-icon">📂</h1>
+                <p id="drop-text" class="mb-0 fw-bold text-primary">Upuść plik w formacie .BMP tutaj lub kliknij</p>
+                <p id="file-name" class="mt-2 text-success fw-bold d-none"></p>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" id="upload-form">
+                {% csrf_token %}
+                <div style="display: none;">
+                    {{ form.image }} 
+                </div>
+            </form>
+
+            <button id="start-btn" class="btn btn-kas btn-lg w-100 d-none shadow-sm">
+                Rozpocznij analizę
+            </button>
+
+            <div id="loading" class="d-none mt-3">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2 text-primary fw-bold">Przetwarzanie obrazu...</p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.querySelector('input[type="file"]'); 
+    
+    const form = document.getElementById('upload-form');
+    const loading = document.getElementById('loading');
+    const dropText = document.getElementById('drop-text');
+    const dropIcon = document.getElementById('drop-icon');
+    const fileNameDisplay = document.getElementById('file-name');
+    const startBtn = document.getElementById('start-btn');
+
+    if (fileInput) {
+        fileInput.setAttribute('accept', '.bmp');
+    }
+
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.style.backgroundColor = '#c5cae9';
+        dropZone.style.borderColor = '#c62828';
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        e.preventDefault();
+        if (startBtn.classList.contains('d-none')) {
+            resetDropZoneStyle();
+        }
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        
+        if (e.dataTransfer.files.length) {
+            const droppedFile = e.dataTransfer.files[0];
+            
+            if (validateFile(droppedFile)) {
+                fileInput.files = e.dataTransfer.files; 
+                handleFileSelection(droppedFile);
+            } else {
+                resetDropZoneStyle();
+            }
+        }
+    });
+
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length) {
+            const selectedFile = fileInput.files[0];
+            
+            if (validateFile(selectedFile)) {
+                handleFileSelection(selectedFile);
+            } else {
+                fileInput.value = '';
+            }
+        }
+    });
+
+    function validateFile(file) {
+        const fileName = file.name.toLowerCase();
+        
+        if (!fileName.endsWith('.bmp')) {
+            alert("Błąd formatu!\n\nSystem obsługuje tylko pliki .BMP (bitmapy).\nWybrany plik: " + file.name);
+            return false;
+        }
+        return true;
+    }
+
+    function handleFileSelection(file) {
+        dropZone.style.backgroundColor = '#e8f5e9';
+        dropZone.style.borderColor = '#2e7d32';
+        
+        dropIcon.textContent = '✅';
+        dropText.textContent = 'Plik gotowy do analizy:';
+        dropText.classList.remove('text-primary');
+        dropText.classList.add('text-success');
+
+        fileNameDisplay.textContent = file.name;
+        fileNameDisplay.classList.remove('d-none');
+
+        startBtn.classList.remove('d-none');
+    }
+    function resetDropZoneStyle() {
+        dropZone.style.backgroundColor = '#e8eaf6';
+        dropZone.style.borderColor = '#1a237e';
+        dropIcon.textContent = '📂';
+        dropText.textContent = 'Upuść plik w formacie .BMP tutaj lub kliknij';
+        dropText.classList.add('text-primary');
+        dropText.classList.remove('text-success');
+        fileNameDisplay.classList.add('d-none');
+    }
+    startBtn.addEventListener('click', () => {
+        dropZone.classList.add('d-none');
+        startBtn.classList.add('d-none');
+        loading.classList.remove('d-none');
+        form.submit();
+    });
+</script>
+{% endblock %}

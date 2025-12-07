@@ -1,0 +1,99 @@
+{% extends 'scanner/base.html' %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="{% url 'upload_scan' %}" class="text-decoration-none">← Wróć do skanera</a>
+</div>
+
+<div class="alert {% if scan.anomalies_found > 0 %}alert-danger{% else %}alert-success{% endif %} d-flex justify-content-between align-items-center">
+    <div>
+        <h4 class="mb-0">
+            {% if scan.status == 'error' %}
+                Błąd analizy (Nie znaleziono pasującego modelu auta)
+            {% elif scan.anomalies_found > 0 %}
+                Wykryte anomalie: {{ scan.anomalies_found }}
+            {% else %}
+                Brak anomalii
+            {% endif %}
+        </h4>
+        {% if scan.matched_clean_image %}
+            <small>Porównano z wzorcem: <strong>{{ scan.matched_clean_image.title }}</strong></small>
+        {% endif %}
+    </div>
+    <span class="badge bg-light text-dark">{{ scan.get_status_display }}</span>
+</div>
+
+{% if scan.result_image %}
+<div class="row justify-content-center">
+    <div class="col-md-10 mb-4">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white fw-bold">Wykryte obszary</div>
+            <div class="card-body p-0 bg-dark text-center">
+                
+                <div class="position-relative d-inline-block">
+                    <img src="{{ scan.result_image.url }}" class="img-fluid d-block" style="max-width: 100%; height: auto;">
+
+                    {% if scan.detection_data %}
+                        {% for box in scan.detection_data %}
+                        <div class="anomaly-box" 
+                             style="left: {{ box.x }}%; top: {{ box.y }}%; width: {{ box.w }}%; height: {{ box.h }}%;">
+                            <div class="anomaly-tooltip">
+                                ANOMALIA {{ box.conf }}%
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="card mt-4">
+    <div class="card-header bg-light">
+        <strong>Oceń pracę skanera</strong>
+    </div>
+    <div class="card-body">
+        {% if saved %}
+            <div class="alert alert-success">Dziękujemy! Twój opis został zapisany w bazie.</div>
+        {% endif %}
+
+        <form method="post" class="row g-3">
+            {% csrf_token %}
+            <div class="col-md-4">
+                <label class="form-label">Twoja ocena:</label>
+                <select name="confirmed_label" class="form-select">
+                    <option value="unknown" {% if scan.confirmed_label == 'unknown' %}selected{% endif %}>-- Wybierz --</option>
+                    <option value="clean" {% if scan.confirmed_label == 'clean' %}selected{% endif %}>Fałszywy alarm (Czyste)</option>
+                    <option value="dirty" {% if scan.confirmed_label == 'dirty' %}selected{% endif %}>Potwierdzam (Przemyt)</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Komentarz (opcjonalnie):</label>
+                <input type="text" name="user_comments" class="form-control" 
+                       value="{{ scan.user_comments|default:'' }}" placeholder="Np. papierosy w nadkolu">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Zapisz</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="mt-3 text-center text-muted">
+    <small style="font-size: 0.75em; opacity: 0.7;">
+        ID Skanu: {{ scan.id }} | Czas: {{ scan.created_at|date:"d.m.Y H:i" }}
+    </small>
+</div>
+
+
+<style>
+    .anomaly-box { position: absolute; z-index: 10; cursor: help; transition: all 0.2s ease; }
+    .anomaly-box:hover { background-color: rgba(255, 0, 0, 0.15); box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.8); z-index: 20; }
+    .anomaly-tooltip { display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background-color: #dc3545; color: white; padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: bold; white-space: nowrap; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin-bottom: 8px; pointer-events: none; }
+    .anomaly-tooltip::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -6px; border-width: 6px; border-style: solid; border-color: #dc3545 transparent transparent transparent; }
+    .anomaly-box:hover .anomaly-tooltip { display: block; }
+</style>
+
+{% endblock %}
