@@ -1,4 +1,4 @@
-# KAS HackNation - System Detekcji Anomalii w Obrazach Rentgenowskich
+# KAS Anomaly Vision - System Detekcji Anomalii w Obrazach Rentgenowskich
 
 System webowy oparty na Django do automatycznej detekcji anomalii w obrazach rentgenowskich pojazdów.
 
